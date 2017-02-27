@@ -39,10 +39,10 @@ public class RandomFile {
 		} // end finally
 	} // end createFile
 
-	public RandomAccessFile openFile(String fileName,RandomAccessFile file){
+	public RandomAccessFile openFile(String fileName,RandomAccessFile file,String openFileFor){
 		try // open file
 		{
-			file = new RandomAccessFile(fileName, "rw");
+			file = new RandomAccessFile(fileName, openFileFor);
 			return file;
 		} // end try
 		catch (IOException ioException) {
@@ -54,7 +54,7 @@ public class RandomFile {
 
 	// Open file for adding or changing records
 	public void openWriteFile(String fileName) {
-		output=openFile(fileName,output);
+		output=openFile(fileName,output,"rw");
 	} // end method openFile
 
 	public RandomAccessFile closeFile( RandomAccessFile file,String message){
@@ -146,7 +146,7 @@ public class RandomFile {
 
 	// Open file for reading
 	public void openReadFile(String fileName) {
-		input=openFile(fileName,input);
+		input=openFile(fileName,input,"r");
 	} // end method openFile
 
 	// Close file
