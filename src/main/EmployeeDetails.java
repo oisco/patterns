@@ -887,7 +887,6 @@ public class EmployeeDetails extends JFrame implements ActionListener, ItemListe
 
 	// allow to save changes to file when exiting the application
 	private void exitApp() {
-		// if file is not empty allow to save changes
 		if (file.length() != 0) {
 			if (changesMade) {
 				int returnVal = JOptionPane.showOptionDialog(frame, "Do you want to save changes?", "Save",
@@ -896,33 +895,20 @@ public class EmployeeDetails extends JFrame implements ActionListener, ItemListe
 				if (returnVal == JOptionPane.YES_OPTION) {
 					saveFile();// save file
 					// delete generated file if user saved details to other file
-					if (file.getName().equals(generatedFileName))
-						file.delete();// delete file
-					System.exit(0);// exit application
+					exit();
+					return;
 				} // end if
-					// else exit application
-				else if (returnVal == JOptionPane.NO_OPTION) {
-					// delete generated file if user chooses not to save file
-					if (file.getName().equals(generatedFileName))
-						file.delete();// delete file
-					System.exit(0);// exit application
-				} // end else if
 			} // end if
-			else {
-				// delete generated file if user chooses not to save file
-				if (file.getName().equals(generatedFileName))
-					file.delete();// delete file
-				System.exit(0);// exit application
-			} // end else
-				// else exit application
-		} else {
+		}
 			// delete generated file if user chooses not to save file
-			if (file.getName().equals(generatedFileName))
-				file.delete();// delete file
-			System.exit(0);// exit application
-		} // end else
+		exit();
 	}// end exitApp
 
+	public void exit(){
+		if (file.getName().equals(generatedFileName))
+			file.delete();// delete file
+		System.exit(0);// exit application
+	}
 	// generate 20 character long file name
 	private String getFileName() {
 		String fileNameChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890_-";
