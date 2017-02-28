@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Random;
 import java.util.Vector;
 
@@ -77,8 +78,6 @@ public class EmployeeDetails extends JFrame implements ActionListener, ItemListe
 		menuBar.add(recordMenu);
 		menuBar.add(navigateMenu);
 		menuBar.add(closeMenu);
-
-		//simplify keyboard shortcuts
 
 		fileMenu.add(open = new JMenuItem("Open")).addActionListener(this);
 		open.setAccelerator(KeyStroke.getKeyStroke("control O"));
@@ -672,51 +671,51 @@ public class EmployeeDetails extends JFrame implements ActionListener, ItemListe
 	// check for input in text fields
 	private boolean checkInput() {
 		boolean valid = true;
-		// if any of inputs are in wrong format, colour text field and display
-		// message
-		if (ppsField.isEditable() && ppsField.getText().trim().isEmpty()) {
-			ppsField.setBackground(new Color(255, 150, 150));
-			valid = false;
-		} // end if
-		if (ppsField.isEditable() && correctPps(ppsField.getText().trim(), currentByteStart)) {
-			ppsField.setBackground(new Color(255, 150, 150));
-			valid = false;
-		} // end if
-		if (surnameField.isEditable() && surnameField.getText().trim().isEmpty()) {
-			surnameField.setBackground(new Color(255, 150, 150));
-			valid = false;
-		} // end if
-		if (firstNameField.isEditable() && firstNameField.getText().trim().isEmpty()) {
-			firstNameField.setBackground(new Color(255, 150, 150));
-			valid = false;
-		} // end if
-		if (genderCombo.getSelectedIndex() == 0 && genderCombo.isEnabled()) {
-			genderCombo.setBackground(new Color(255, 150, 150));
-			valid = false;
-		} // end if
-		if (departmentCombo.getSelectedIndex() == 0 && departmentCombo.isEnabled()) {
-			departmentCombo.setBackground(new Color(255, 150, 150));
-			valid = false;
-		} // end if
-		try {// try to get values from text field
-			Double.parseDouble(salaryField.getText());
-			// check if salary is greater than 0
-			if (Double.parseDouble(salaryField.getText()) < 0) {
-				salaryField.setBackground(new Color(255, 150, 150));
+		ArrayList<JTextField> fields=new ArrayList<>();
+		fields.add(surnameField);fields.add(firstNameField);fields.add(ppsField); fields.add(salaryField);
+		ArrayList<JComboBox> comboBoxes=new ArrayList<>();
+		comboBoxes.add(genderCombo);comboBoxes.add(departmentCombo);comboBoxes.add(fullTimeCombo);
+
+		for(int i=0;i<fields.size();i++){
+			if(fields.get(i).isEditable()&& fields.get(i).getText().trim().isEmpty()){
+				fields.get(i).setBackground(new Color(255, 150, 150));
 				valid = false;
-			} // end if
-		} // end try
-		catch (NumberFormatException num) {
-			if (salaryField.isEditable()) {
-				salaryField.setBackground(new Color(255, 150, 150));
+			}
+		}
+		//check if pps is not alreaddy flagged for being empty
+		if (ppsField.getBackground()!=new Color(255, 150, 150)) {
+			if(!correctPps(ppsField.getText().trim(), currentByteStart)){
+				ppsField.setBackground(new Color(255, 150, 150));
+				valid=false;
+			}
+		}
+
+		for(int i=0;i<comboBoxes.size();i++){
+			if(comboBoxes.get(i).getSelectedIndex() == 0 && comboBoxes.get(i).isEnabled()){
+				comboBoxes.get(i).setBackground(new Color(255, 150, 150));
 				valid = false;
-			} // end if
-		} // end catch
-		if (fullTimeCombo.getSelectedIndex() == 0 && fullTimeCombo.isEnabled()) {
-			fullTimeCombo.setBackground(new Color(255, 150, 150));
-			valid = false;
-		} // end if
-			// display message if any input or format is wrong
+			}
+		}
+
+		//if salary is not already flagged for being null
+		if(salaryField.getBackground()!=new Color(255, 150, 150)){
+			try {// try to get values from text field
+				Double.parseDouble(salaryField.getText());
+				// check if salary is greater than 0
+				if (Double.parseDouble(salaryField.getText()) < 0) {
+					salaryField.setBackground(new Color(255, 150, 150));
+					valid = false;
+				} // end if
+			} // end try
+			catch (NumberFormatException num) {
+				if (salaryField.isEditable()) {
+					salaryField.setBackground(new Color(255, 150, 150));
+					valid = false;
+				} // end if
+			} // end catch
+		}
+
+		// display message if any input or format is wrong
 		if (!valid)
 			JOptionPane.showMessageDialog(null, "Wrong values or format! Please check!");
 		// set text field to white colour if text fields are editable
