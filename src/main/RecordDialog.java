@@ -9,39 +9,39 @@ import net.miginfocom.swing.MigLayout;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;/*
- *
- * This is a dialog for adding new Employees and saving records to file
- *
- * */
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.util.ArrayList;
 
 public abstract class RecordDialog extends JDialog implements ActionListener {
     JTextField idField2, ppsField2, surnameField2, firstNameField2, salaryField2;
     JComboBox<String> genderCombo2, departmentCombo2, fullTimeCombo2;
     JButton save, cancel;
     EmployeeDetails parent;
+    File file;
+    long currentByteStart;
+    private RandomFile application = new RandomFile();
 
     // constructor for add record dialog
-    public RecordDialog(EmployeeDetails parent,String title) {
+    public RecordDialog(EmployeeDetails parent, String title, long currentByteStart, File file) {
         setTitle(title);
         setModal(true);
 
+        this.currentByteStart=currentByteStart;
+        this.file=file;
         this.parent = parent;
-        this.parent.setEnabled(false);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         JScrollPane scrollPane = new JScrollPane(dialogPane());
         setContentPane(scrollPane);
-
     }// end AddRecordDialog
 
 
-    public Employee getFromFields(){
-          return new Employee(Integer.parseInt(idField2.getText()), ppsField2.getText().toUpperCase(), surnameField2.getText().toUpperCase(),
-                           firstNameField2.getText().toUpperCase(), genderCombo2.getSelectedItem().toString().charAt(0),
-                                departmentCombo2.getSelectedItem().toString(), Double.parseDouble(salaryField2.getText()), false);
-            }
-
+    public Employee getFromFields() {
+        return new Employee(Integer.parseInt(idField2.getText()), ppsField2.getText().toUpperCase(), surnameField2.getText().toUpperCase(),
+                firstNameField2.getText().toUpperCase(), genderCombo2.getSelectedItem().toString().charAt(0),
+                departmentCombo2.getSelectedItem().toString(), Double.parseDouble(salaryField2.getText()), false);
+    }
 
     public  abstract  void setUpFields();
 
@@ -104,52 +104,85 @@ public abstract class RecordDialog extends JDialog implements ActionListener {
         return empDetails;
     }
 
+    // check for correct PPS format and look if PPS already in use
+    public boolean correctPps(String pps, long currentByte) {
+        boolean ppsExist = false;
+        // check for correct PPS format based on assignment description
+        if (pps.length() == 7) {
+            if (pps.matches("[0-9][0-9][0-9][0-9][0-9][0-9][A-Z^a-z]")) {
+                // open file for reading
+                application.openReadFile(file.getAbsolutePath());
+                // look in file is PPS already in use
+                if(!application.isPpsExist(pps, currentByte)){
+                    ppsExist =true;
+                }
+                application.closeReadFile();// close file for reading
+            } // end if
+            else
+                ppsExist = false;
+        } // end if
+        else
+            ppsExist = false;
+
+        return ppsExist;
+    }// end correctPPS
+
     // check for input in text fields
     public boolean checkInput() {
         boolean valid = true;
-        // if any of inputs are in wrong format, colour text field and display message
-        if (ppsField2.getText().equals("")) {
-            ppsField2.setBackground(new Color(255, 150, 150));
-            valid = false;
-        }// end if
-        if (this.parent.correctPps(this.ppsField2.getText().trim(), -1)) {
-            ppsField2.setBackground(new Color(255, 150, 150));
-            valid = false;
-        }// end if
-        if (surnameField2.getText().isEmpty()) {
-            surnameField2.setBackground(new Color(255, 150, 150));
-            valid = false;
-        }// end if
-        if (firstNameField2.getText().isEmpty()) {
-            firstNameField2.setBackground(new Color(255, 150, 150));
-            valid = false;
-        }// end if
-        if (genderCombo2.getSelectedIndex() == 0) {
-            genderCombo2.setBackground(new Color(255, 150, 150));
-            valid = false;
-        }// end if
-        if (departmentCombo2.getSelectedIndex() == 0) {
-            departmentCombo2.setBackground(new Color(255, 150, 150));
-            valid = false;
-        }// end if
-        try {// try to get values from text field
-            Double.parseDouble(salaryField2.getText());
-            // check if salary is greater than 0
-            if (Double.parseDouble(salaryField2.getText()) < 0) {
-                salaryField2.setBackground(new Color(255, 150, 150));
+        ArrayList<JTextField> fields=new ArrayList<>();
+        fields.add(surnameField2);fields.add(firstNameField2);fields.add(ppsField2); fields.add(salaryField2);
+        ArrayList<JComboBox> comboBoxes=new ArrayList<>();
+        comboBoxes.add(genderCombo2);comboBoxes.add(departmentCombo2);comboBoxes.add(fullTimeCombo2);
+
+        for(int i=0;i<fields.size();i++){
+            if(fields.get(i).isEditable()&& fields.get(i).getText().trim().isEmpty()){
+                fields.get(i).setBackground(new Color(255, 150, 150));
                 valid = false;
-            }// end if
-        }// end try
-        catch (NumberFormatException num) {
-            salaryField2.setBackground(new Color(255, 150, 150));
-            valid = false;
-        }// end catch
-        if (fullTimeCombo2.getSelectedIndex() == 0) {
-            fullTimeCombo2.setBackground(new Color(255, 150, 150));
-            valid = false;
-        }// end if
+            }
+        }
+        //check if pps is not alreaddy flagged for being empty
+        if (ppsField2.getBackground()!=new Color(255, 150, 150) && ppsField2.isEditable()) {
+            if(!correctPps(ppsField2.getText().trim(), currentByteStart)){
+                ppsField2.setBackground(new Color(255, 150, 150));
+                valid=false;
+            }
+        }
+
+        for(int i=0;i<comboBoxes.size();i++){
+            if(comboBoxes.get(i).getSelectedIndex() == 0 && comboBoxes.get(i).isEnabled()){
+                comboBoxes.get(i).setBackground(new Color(255, 150, 150));
+                valid = false;
+            }
+        }
+
+        //if salary is not already flagged for being null
+        if(salaryField2.getBackground()!=new Color(255, 150, 150)){
+            try {// try to get values from text field
+                Double.parseDouble(salaryField2.getText());
+                // check if salary is greater than 0
+                if (Double.parseDouble(salaryField2.getText()) < 0) {
+                    salaryField2.setBackground(new Color(255, 150, 150));
+                    valid = false;
+                } // end if
+            } // end try
+            catch (NumberFormatException num) {
+                if (salaryField2.isEditable()) {
+                    salaryField2.setBackground(new Color(255, 150, 150));
+                    valid = false;
+                } // end if
+            } // end catch
+        }
+
+        // display message if any input or format is wrong
+        if (!valid)
+            JOptionPane.showMessageDialog(null, "Wrong values or format! Please check!");
+        // set text field to white colour if text fields are editable
+        if (ppsField2.isEditable())
+            setToWhite();
+
         return valid;
-    }// end checkInput
+    }
 
     // set text field to white colour
     public void setToWhite() {
@@ -163,14 +196,17 @@ public abstract class RecordDialog extends JDialog implements ActionListener {
     }// end setToWhite
 
     // action performed
-    public void actionPerformed(ActionEvent e) {
+    // action performed
+     public void actionPerformed(ActionEvent e) {
         // if chosen option save, save record to file
-        if (e.getSource() == save) {
-            addOrUpdate();
-        }
-        else if (e.getSource() == cancel)
-            dispose();// dispose dialog
-    }// end actionPerformed
+         if (e.getSource() == save) {
+             if(checkInput()){
+                 addOrUpdate();
+             }
+         }
+         else if (e.getSource() == cancel)
+           dispose();// dispose dialog
+     }// end actionPerformed
 
     public abstract void addOrUpdate();
 

@@ -11,7 +11,7 @@ public class AddRecordDialog extends RecordDialog {
 	File file;
 
 	public AddRecordDialog(EmployeeDetails parent, String title, File file, long currentByteStart) {
-		super(parent, title);
+		super(parent, title,currentByteStart,file);
 		this.currentByteStart=currentByteStart;
 		this.file=file;
 		setUpFields();

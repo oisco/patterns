@@ -12,7 +12,7 @@ public class EditRecordDialog extends RecordDialog{
     long currentByteStart;
 
     public EditRecordDialog(EmployeeDetails parent, String title, File file, long currentByteStart,Employee currentEmployee) {
-        super(parent, title);
+        super(parent, title,currentByteStart,file);
         this.currentByteStart=currentByteStart;
         this.currentEmployee=currentEmployee;
 
@@ -33,7 +33,7 @@ public class EditRecordDialog extends RecordDialog{
                 // open file for writing
                 application.openWriteFile(this.parent.file.getAbsolutePath());
                 // get changes for current Employee
-                currentEmployee = getChangedDetails();
+                currentEmployee = getFromFields();
                 // write changes to file for corresponding Employee record
                 application.changeRecords(currentEmployee, currentByteStart);
                 application.closeWriteFile();// close file for writing
@@ -43,18 +43,6 @@ public class EditRecordDialog extends RecordDialog{
             } // end if
             setEnabled(false);
         }// end saveChanges
-
-    private Employee getChangedDetails() {
-        boolean fullTime = false;
-        Employee theEmployee;
-        if (((String) fullTimeCombo2.getSelectedItem()).equalsIgnoreCase("Yes"))
-            fullTime = true;
-        theEmployee = new Employee(Integer.parseInt(idField2.getText()), ppsField2.getText().toUpperCase(),
-                surnameField2.getText().toUpperCase(), firstNameField2.getText().toUpperCase(),
-                genderCombo2.getSelectedItem().toString().charAt(0), departmentCombo2.getSelectedItem().toString(),
-                Double.parseDouble(salaryField2.getText()), fullTime);
-        return theEmployee;
-    }// end getChangedDetails
 
     public void setUpFields(){
         //NB --update combos
