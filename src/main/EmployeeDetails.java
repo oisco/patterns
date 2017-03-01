@@ -502,6 +502,27 @@ public class EmployeeDetails extends JFrame implements ActionListener, ItemListe
 		return nextFreeId;
 	}// end getNextFreeId
 
+	// get values from text fields and create Employee object
+	private Employee getChangedDetails() {
+		boolean fullTime = false;
+		Employee theEmployee;
+		if (((String) fullTimeCombo.getSelectedItem()).equalsIgnoreCase("Yes"))
+			fullTime = true;
+		theEmployee = new Employee(Integer.parseInt(idField.getText()), ppsField.getText().toUpperCase(),
+				surnameField.getText().toUpperCase(), firstNameField.getText().toUpperCase(),
+				genderCombo.getSelectedItem().toString().charAt(0), departmentCombo.getSelectedItem().toString(),
+				Double.parseDouble(salaryField.getText()), fullTime);
+		return theEmployee;
+	}// end getChangedDetails
+
+	// add Employee object to fail
+	public void addRecord(Employee newEmployee) {
+		// open file for writing
+		application.openWriteFile(file.getAbsolutePath());
+		// write into a file
+		currentByteStart = application.addRecords(newEmployee);
+		application.closeWriteFile();// close file for writing
+	}// end addRecord
 
 	// delete (make inactive - empty) record from file
 	private void deleteRecord() {
@@ -555,6 +576,17 @@ public class EmployeeDetails extends JFrame implements ActionListener, ItemListe
 		return allEmployee;
 	}// end getAllEmployees
 
+	// activate field for editing
+	private void editDetails() {
+		// activate field for editing if there is records to display
+		if (isSomeoneToDisplay()) {
+			// remove euro sign from salary text field
+			salaryField.setText(fieldFormat.format(currentEmployee.getSalary()));
+			change = false;
+			setEnabled(true);// enable text fields for editing
+		} // end if
+	}// end editDetails
+
 	// ignore changes and set text field unenabled
 	private void cancelChange() {
 		setEnabled(false);
@@ -602,6 +634,7 @@ public class EmployeeDetails extends JFrame implements ActionListener, ItemListe
 		boolean anyChanges = false;
 		// if changes where made, allow user to save there changes
 		if (change) {
+			saveChanges();// save changes
 			anyChanges = true;
 		} // end if
 			// if no changes made, set text fields as unenabled and display
@@ -613,6 +646,39 @@ public class EmployeeDetails extends JFrame implements ActionListener, ItemListe
 
 		return anyChanges;
 	}// end checkForChanges
+
+	// set text field background colour to white
+	private void setToWhite() {
+		ppsField.setBackground(UIManager.getColor("TextField.background"));
+		surnameField.setBackground(UIManager.getColor("TextField.background"));
+		firstNameField.setBackground(UIManager.getColor("TextField.background"));
+		salaryField.setBackground(UIManager.getColor("TextField.background"));
+		genderCombo.setBackground(UIManager.getColor("TextField.background"));
+		departmentCombo.setBackground(UIManager.getColor("TextField.background"));
+		fullTimeCombo.setBackground(UIManager.getColor("TextField.background"));
+	}// end setToWhite
+
+	// enable text fields for editing
+	public void setEnabled(boolean booleanValue) {
+		boolean search;
+		if (booleanValue)
+			search = false;
+		else
+			search = true;
+		ppsField.setEditable(booleanValue);
+		surnameField.setEditable(booleanValue);
+		firstNameField.setEditable(booleanValue);
+		genderCombo.setEnabled(booleanValue);
+		departmentCombo.setEnabled(booleanValue);
+		salaryField.setEditable(booleanValue);
+		fullTimeCombo.setEnabled(booleanValue);
+		saveChange.setVisible(booleanValue);
+		cancelChange.setVisible(booleanValue);
+		searchByIdField.setEnabled(search);
+		searchBySurnameField.setEnabled(search);
+		searchId.setEnabled(search);
+		searchSurname.setEnabled(search);
+	}// end setEnabled
 
 	// open file
 	private void openFile() {
@@ -668,7 +734,7 @@ public class EmployeeDetails extends JFrame implements ActionListener, ItemListe
 						// open file for writing
 						application.openWriteFile(file.getAbsolutePath());
 						// get changes for current Employee
-//						currentEmployee = getChangedDetails();
+						currentEmployee = getChangedDetails();
 						// write changes to file for corresponding Employee
 						// record
 						application.changeRecords(currentEmployee, currentByteStart);
@@ -681,6 +747,48 @@ public class EmployeeDetails extends JFrame implements ActionListener, ItemListe
 			setEnabled(false);
 		} // end else
 	}// end saveFile
+	// check for correct PPS format and look if PPS already in use
+	public boolean correctPps(String pps, long currentByte) {
+		boolean ppsExist = false;
+		// check for correct PPS format based on assignment description
+		if (pps.length() == 8 || pps.length() == 9) {
+			if (Character.isDigit(pps.charAt(0)) && Character.isDigit(pps.charAt(1))
+					&& Character.isDigit(pps.charAt(2))	&& Character.isDigit(pps.charAt(3))
+					&& Character.isDigit(pps.charAt(4))	&& Character.isDigit(pps.charAt(5))
+					&& Character.isDigit(pps.charAt(6))	&& Character.isLetter(pps.charAt(7))
+					&& (pps.length() == 8 || Character.isLetter(pps.charAt(8)))) {
+				// open file for reading
+				application.openReadFile(file.getAbsolutePath());
+				// look in file is PPS already in use
+				ppsExist = application.isPpsExist(pps, currentByte);
+				application.closeReadFile();// close file for reading
+			} // end if
+			else
+				ppsExist = true;
+		} // end if
+		else
+			ppsExist = true;
+
+		return ppsExist;
+	}// end correctPPS
+	// save changes to current Employee
+	private void saveChanges() {
+		int returnVal = JOptionPane.showOptionDialog(frame, "Do you want to save changes to current Employee?", "Save",
+				JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE, null, null, null);
+		// if user choose to save changes, save changes
+		if (returnVal == JOptionPane.YES_OPTION) {
+			// open file for writing
+			application.openWriteFile(file.getAbsolutePath());
+			// get changes for current Employee
+			currentEmployee = getChangedDetails();
+			// write changes to file for corresponding Employee record
+			application.changeRecords(currentEmployee, currentByteStart);
+			application.closeWriteFile();// close file for writing
+			changesMade = false;// state that all changes has bee saved
+		} // end if
+		displayRecords(currentEmployee);
+		setEnabled(false);
+	}// end saveChanges
 
 	// save file as 'save as'
 	private void saveFileAs() {
@@ -772,51 +880,51 @@ public class EmployeeDetails extends JFrame implements ActionListener, ItemListe
 	public void actionPerformed(ActionEvent e) {
 
 		if (e.getSource() == closeApp) {
+//			if (checkInput() && !checkForChanges())
 				exitApp();
 		} else if (e.getSource() == open) {
+//			if (checkInput() && !checkForChanges())
 				openFile();
 		} else if (e.getSource() == save) {
+//			if (checkInput() && !checkForChanges())
 				saveFile();
 			change = false;
 		} else if (e.getSource() == saveAs) {
+//			if (checkInput() && !checkForChanges())
 				saveFileAs();
 			change = false;
 		} else if (e.getSource() == searchById) {
+//			if (checkInput() && !checkForChanges())
 				displaySearchByIdDialog();
 		} else if (e.getSource() == searchBySurname) {
+//			if (checkInput() && !checkForChanges())
 				displaySearchBySurnameDialog();
 		} else if (e.getSource() == searchId || e.getSource() == searchByIdField)
 			searchEmployeeById();
 		else if (e.getSource() == searchSurname || e.getSource() == searchBySurnameField)
 			searchEmployeeBySurname();
 		else if (e.getSource() == saveChange) {
-//			if (checkInput() && !checkForChanges())
-				;
 		} else if (e.getSource() == cancelChange)
 			cancelChange();
 		else if (e.getSource() == firstItem || e.getSource() == first) {
 				firstRecord();
 				displayRecords(currentEmployee);
-//			}
 		} else if (e.getSource() == prevItem || e.getSource() == previous) {
 				previousRecord();
 				displayRecords(currentEmployee);
-//			}
 		} else if (e.getSource() == nextItem || e.getSource() == next) {
 				nextRecord();
 				displayRecords(currentEmployee);
-//			}
 		} else if (e.getSource() == lastItem || e.getSource() == last) {
 				lastRecord();
 				displayRecords(currentEmployee);
-//			}
 		} else if (e.getSource() == listAll || e.getSource() == displayAll) {
 				if (isSomeoneToDisplay())
 					displayEmployeeSummaryDialog();
 		} else if (e.getSource() == create || e.getSource() == add) {
-				new AddRecordDialog(EmployeeDetails.this,"Add Record",file,currentByteStart,application);
+				new AddRecordDialog(EmployeeDetails.this,"Add Record",file,currentByteStart);
 		} else if (e.getSource() == modify || e.getSource() == edit) {
-				new EditRecordDialog(EmployeeDetails.this,"Edit Record",file,currentByteStart,currentEmployee,application);
+				new EditRecordDialog(EmployeeDetails.this,"Edit Record",file,currentByteStart,currentEmployee);
 		} else if (e.getSource() == delete || e.getSource() == deleteButton) {
 				deleteRecord();
 		} else if (e.getSource() == searchBySurname) {
@@ -847,6 +955,7 @@ public class EmployeeDetails extends JFrame implements ActionListener, ItemListe
 
 	// create and show main dialog
 	private static void createAndShowGUI() {
+
 		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		frame.createContentPane();// add content pane to frame
 		frame.setSize(760, 600);

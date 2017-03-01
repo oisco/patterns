@@ -7,10 +7,13 @@ import java.io.File;
  * Created by Oisín on 3/1/2017.
  */
 public class EditRecordDialog extends RecordDialog{
+    private RandomFile application = new RandomFile();
     Employee currentEmployee;
+    long currentByteStart;
 
-    public EditRecordDialog(EmployeeDetails parent, String title, File file, long currentByteStart,Employee currentEmployee,RandomFile application) {
-        super(parent, title,currentByteStart,file,application);
+    public EditRecordDialog(EmployeeDetails parent, String title, File file, long currentByteStart,Employee currentEmployee) {
+        super(parent, title);
+        this.currentByteStart=currentByteStart;
         this.currentEmployee=currentEmployee;
 
         setUpFields();
@@ -42,14 +45,15 @@ public class EditRecordDialog extends RecordDialog{
         }// end saveChanges
 
     private Employee getChangedDetails() {
+        boolean fullTime = false;
         Employee theEmployee;
-        if (((String) fullTimeCombo2.getSelectedItem()).equalsIgnoreCase("Yes")){
-            theEmployee = getFromFields();
-            return theEmployee;
-        }
-        else{
-            return null;
-        }
+        if (((String) fullTimeCombo2.getSelectedItem()).equalsIgnoreCase("Yes"))
+            fullTime = true;
+        theEmployee = new Employee(Integer.parseInt(idField2.getText()), ppsField2.getText().toUpperCase(),
+                surnameField2.getText().toUpperCase(), firstNameField2.getText().toUpperCase(),
+                genderCombo2.getSelectedItem().toString().charAt(0), departmentCombo2.getSelectedItem().toString(),
+                Double.parseDouble(salaryField2.getText()), fullTime);
+        return theEmployee;
     }// end getChangedDetails
 
     public void setUpFields(){
