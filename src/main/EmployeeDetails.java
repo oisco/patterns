@@ -305,10 +305,15 @@ public class EmployeeDetails extends JFrame implements ActionListener, ItemListe
 			new EmployeeSummaryDialog(getAllEmloyees());
 	}// end displaySummaryDialo
 
-	private void displaySearchDialog(String toSearch){
-		if (isSomeoneToDisplay())
-			new SearchDialog(EmployeeDetails.this,toSearch);
-	}
+//	private void displaySearchDialog(String toSearch){
+//		if (isSomeoneToDisplay())
+//			if(toSearch.equals("ID")){
+//				new SearchByIdDialog(EmployeeDetails.this,toSearch);
+//			}
+//			else {
+//				new SearchBySurnameDialog(EmployeeDetails.this,toSearch);
+//			}
+//	}
 
 	// find byte start in file for first active record
 	private void firstRecord() {
@@ -431,6 +436,8 @@ public class EmployeeDetails extends JFrame implements ActionListener, ItemListe
 		searchByIdField.setText("");
 	}// end searchEmployeeByID
 
+
+//	public void
 	// search Employee by surname
 	public void searchEmployeeBySurname() {
 		boolean found = false;
@@ -737,9 +744,7 @@ public class EmployeeDetails extends JFrame implements ActionListener, ItemListe
 				saveFileAs();
 			change = false;
 		} else if (e.getSource() == searchById) {
-				displaySearchDialog("ID");
-		} else if (e.getSource() == searchBySurname) {
-				displaySearchDialog("Surname");
+				new SearchByIdDialog(EmployeeDetails.this,"ID");
 		}
 		else if (e.getSource() == searchId || e.getSource() == searchByIdField)
 			searchEmployeeById();
@@ -768,7 +773,7 @@ public class EmployeeDetails extends JFrame implements ActionListener, ItemListe
 		} else if (e.getSource() == delete || e.getSource() == deleteButton) {
 				deleteRecord();
 		} else if (e.getSource() == searchBySurname) {
-				new SearchDialog(EmployeeDetails.this,"Surname");
+				new SearchBySurnameDialog(EmployeeDetails.this,"Surname");
 		}
 	}// end actionPerformed
 
