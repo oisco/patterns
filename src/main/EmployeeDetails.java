@@ -41,8 +41,8 @@ public class EmployeeDetails extends JFrame implements ActionListener, ItemListe
 	boolean changesMade = false;
 	private JMenuItem open, save, saveAs, create, modify, delete, firstItem, lastItem, nextItem, prevItem, searchById,
 			searchBySurname, listAll, closeApp;
-	private JButton first, previous, next, last, add, edit, deleteButton, displayAll, searchId, searchSurname,
-			saveChange, cancelChange;
+	private JButton first, previous, next, last, add, edit, deleteButton, displayAll, searchId, searchSurname;
+//			saveChange, cancelChange;
 	private JComboBox<String> genderCombo, departmentCombo, fullTimeCombo;
 	private JTextField idField, ppsField, surnameField, firstNameField, salaryField;
 	private static EmployeeDetails frame = new EmployeeDetails();
@@ -226,15 +226,6 @@ public class EmployeeDetails extends JFrame implements ActionListener, ItemListe
 
 		empDetails.add(new JLabel("Full Time:"), "growx, pushx");
 		empDetails.add(fullTimeCombo = new JComboBox<String>(fullTime), "growx, pushx, wrap");
-
-		buttonPanel.add(saveChange = new JButton("Save"));
-		saveChange.addActionListener(this);
-		saveChange.setVisible(false);
-		saveChange.setToolTipText("Save changes");
-		buttonPanel.add(cancelChange = new JButton("Cancel"));
-		cancelChange.addActionListener(this);
-		cancelChange.setVisible(false);
-		cancelChange.setToolTipText("Cancel edit");
 
 		empDetails.add(buttonPanel, "span 2,growx, pushx,wrap");
 
@@ -506,10 +497,8 @@ public class EmployeeDetails extends JFrame implements ActionListener, ItemListe
 	private void deleteRecord() {
 		if (isSomeoneToDisplay()) {// if any active record in file display
 									// message and delete record
-			int returnVal = JOptionPane.showOptionDialog(frame, "Do you want to delete record?", "Delete",
-					JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE, null, null, null);
 			// if answer yes delete (make inactive - empty) record
-			if (returnVal == JOptionPane.YES_OPTION) {
+			if (showMessage( "Do you want to delete record?", "Delete")) {
 				// open file for writing
 				application.openWriteFile(file.getAbsolutePath());
 				// delete (make inactive - empty) record in file proper position
@@ -554,22 +543,10 @@ public class EmployeeDetails extends JFrame implements ActionListener, ItemListe
 		return allEmployee;
 	}// end getAllEmployees
 
-	// activate field for editing
-	private void editDetails() {
-		// activate field for editing if there is records to display
-		if (isSomeoneToDisplay()) {
-			// remove euro sign from salary text field
-			salaryField.setText(fieldFormat.format(currentEmployee.getSalary()));
-			change = false;
-			setEnabled(true);// enable text fields for editing
-		} // end if
-	}// end editDetails
-
-	// ignore changes and set text field unenabled
-	private void cancelChange() {
-		setEnabled(false);
-		displayRecords(currentEmployee);
-	}// end cancelChange
+	public boolean showMessage(String question,String option){
+		 return JOptionPane.showOptionDialog(frame, question, option,
+				JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE, null, null, null)==JOptionPane.YES_OPTION;
+	}
 
 	// check if any of records in file is active - ID is not 0
 	private boolean isSomeoneToDisplay() {
@@ -607,46 +584,6 @@ public class EmployeeDetails extends JFrame implements ActionListener, ItemListe
 		return checkFile;
 	}// end checkFileName
 
-	// check if any changes text field where made
-//	private boolean checkForChanges() {
-//		boolean anyChanges = false;
-//		// if changes where made, allow user to save there changes
-//		if (change) {
-//			saveChanges();// save changes
-//			anyChanges = true;
-//		} // end if
-//			// if no changes made, set text fields as unenabled and display
-//			// current Employee
-//		else {
-//			setEnabled(false);
-//			displayRecords(currentEmployee);
-//		} // end else
-//
-//		return anyChanges;
-//	}// end checkForChanges
-
-	// enable text fields for editing
-//	public void setEnabled(boolean booleanValue) {
-//		boolean search;
-//		if (booleanValue)
-//			search = false;
-//		else
-//			search = true;
-//		ppsField.setEditable(booleanValue);
-//		surnameField.setEditable(booleanValue);
-//		firstNameField.setEditable(booleanValue);
-//		genderCombo.setEnabled(booleanValue);
-//		departmentCombo.setEnabled(booleanValue);
-//		salaryField.setEditable(booleanValue);
-//		fullTimeCombo.setEnabled(booleanValue);
-//		saveChange.setVisible(booleanValue);
-//		cancelChange.setVisible(booleanValue);
-//		searchByIdField.setEnabled(search);
-//		searchBySurnameField.setEnabled(search);
-//		searchId.setEnabled(search);
-//		searchSurname.setEnabled(search);
-//	}// end setEnabled
-
 	// open file
 	private void openFile() {
 		final JFileChooser fc = new JFileChooser();
@@ -657,10 +594,7 @@ public class EmployeeDetails extends JFrame implements ActionListener, ItemListe
 		// if old file is not empty or changes has been made, offer user to save
 		// old file
 		if (file.length() != 0 || change) {
-			int returnVal = JOptionPane.showOptionDialog(frame, "Do you want to save changes?", "Save",
-					JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE, null, null, null);
-			// if user wants to save file, save it
-			if (returnVal == JOptionPane.YES_OPTION) {
+			if(showMessage( "Do you want to save changes?", "Save")) {
 				saveFile();// save file
 			} // end if
 		} // end if
@@ -692,10 +626,8 @@ public class EmployeeDetails extends JFrame implements ActionListener, ItemListe
 			// if changes has been made to text field offer user to save these
 			// changes
 			if (change) {
-				int returnVal = JOptionPane.showOptionDialog(frame, "Do you want to save changes?", "Save",
-						JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE, null, null, null);
 				// save changes if user choose this option
-				if (returnVal == JOptionPane.YES_OPTION) {
+				if (showMessage( "Do you want to save changes?", "Save")) {
 					// save changes if ID field is not empty
 					if (!idField.getText().equals("")) {
 						// open file for writing
@@ -759,10 +691,8 @@ public class EmployeeDetails extends JFrame implements ActionListener, ItemListe
 	private void exitApp() {
 		if (file.length() != 0) {
 			if (changesMade) {
-				int returnVal = JOptionPane.showOptionDialog(frame, "Do you want to save changes?", "Save",
-						JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE, null, null, null);
 				// if user chooses to save file, save file
-				if (returnVal == JOptionPane.YES_OPTION) {
+				if (showMessage("Do you want to save changes?", "Save")) {
 					saveFile();// save file
 					// delete generated file if user saved details to other file
 					exit();
@@ -823,9 +753,6 @@ public class EmployeeDetails extends JFrame implements ActionListener, ItemListe
 			searchEmployeeById();
 		else if (e.getSource() == searchSurname || e.getSource() == searchBySurnameField)
 			searchEmployeeBySurname();
-		else if (e.getSource() == saveChange) {
-		} else if (e.getSource() == cancelChange)
-			cancelChange();
 		else if (e.getSource() == firstItem || e.getSource() == first) {
 				firstRecord();
 				displayRecords(currentEmployee);
