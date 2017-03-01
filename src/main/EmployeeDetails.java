@@ -7,7 +7,6 @@ package main;
  * */
 
 import net.miginfocom.swing.MigLayout;
-
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -19,7 +18,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.Random;
 import java.util.Vector;
 
@@ -305,19 +303,12 @@ public class EmployeeDetails extends JFrame implements ActionListener, ItemListe
 		// display Employee summary dialog if these is someone to display
 		if (isSomeoneToDisplay())
 			new EmployeeSummaryDialog(getAllEmloyees());
-	}// end displaySummaryDialog
+	}// end displaySummaryDialo
 
-	// display search by ID dialog
-	private void displaySearchByIdDialog() {
-		if (isSomeoneToDisplay())//
-			new SearchDialog(EmployeeDetails.this,"ID");
-	}// end displaySearchByIdDialog
-
-	// display search by surname dialog
-	private void displaySearchBySurnameDialog() {
+	private void displaySearchDialog(String toSearch){
 		if (isSomeoneToDisplay())
-			new SearchDialog(EmployeeDetails.this,"Surname");
-	}// end displaySearchDialog
+			new SearchDialog(EmployeeDetails.this,toSearch);
+	}
 
 	// find byte start in file for first active record
 	private void firstRecord() {
@@ -746,10 +737,11 @@ public class EmployeeDetails extends JFrame implements ActionListener, ItemListe
 				saveFileAs();
 			change = false;
 		} else if (e.getSource() == searchById) {
-				displaySearchByIdDialog();
+				displaySearchDialog("ID");
 		} else if (e.getSource() == searchBySurname) {
-				displaySearchBySurnameDialog();
-		} else if (e.getSource() == searchId || e.getSource() == searchByIdField)
+				displaySearchDialog("Surname");
+		}
+		else if (e.getSource() == searchId || e.getSource() == searchByIdField)
 			searchEmployeeById();
 		else if (e.getSource() == searchSurname || e.getSource() == searchBySurnameField)
 			searchEmployeeBySurname();
