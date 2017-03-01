@@ -9,17 +9,12 @@ import javax.swing.border.EtchedBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-/*
- *
- * This is the dialog for Employee search by ID
- *
- * */
 
-
-public class SearchDialog extends JDialog implements ActionListener {
-    private EmployeeDetails parent;
-    private JButton search, cancel;
-    private JTextField searchField;
+public abstract class SearchDialog extends JDialog implements ActionListener {
+    public EmployeeDetails parent;
+    public JButton search;
+    public JButton cancel;
+    public JTextField searchField;
     private String toSearch;
     // constructor for SearchDialog
     public SearchDialog(EmployeeDetails parent,String toSearch) {
@@ -39,6 +34,8 @@ public class SearchDialog extends JDialog implements ActionListener {
         setVisible(true);
     }// end SearchDialog
 
+
+    public abstract void search();
     // initialize search container
     public Container searchPane() {
         JPanel searchPanel = new JPanel(new GridLayout(3, 1));
@@ -68,31 +65,18 @@ public class SearchDialog extends JDialog implements ActionListener {
         return searchPanel;
     }// end searchPane
 
-    // action listener for save and cancel button
     public void actionPerformed(ActionEvent e) {
         // if option search, search for Employee
         if (e.getSource() == search) {
             // try get correct valus from text field
-            try {
-                Double.parseDouble(searchField.getText());
-                this.parent.searchByIdField.setText(searchField.getText());
-                // search Employee by ID
-                if(this.toSearch.equals("ID")){
-                    this.parent.searchEmployeeById();
-                }
-                else {
-                    this.parent.searchEmployeeBySurname();
-                }
-                dispose();// dispose dialog
-            }// end try
-            catch (NumberFormatException num) {
-                // display message and set colour to text field if entry is wrong
-                searchField.setBackground(new Color(255, 150, 150));
-                JOptionPane.showMessageDialog(null, "Wrong "+this.toSearch+" format!");
-            }// end catch
+            // search Employee by ID
+            search();
+            dispose();// dispose dialog
         }// end if
         // else dispose dialog
         else if (e.getSource() == cancel)
             dispose();
     }// end actionPerformed
+
+
 }// end class searchByIdDialog
