@@ -196,7 +196,6 @@ public abstract class RecordDialog extends JDialog implements ActionListener {
     }// end setToWhite
 
     // action performed
-    // action performed
      public void actionPerformed(ActionEvent e) {
         // if chosen option save, save record to file
          if (e.getSource() == save) {
