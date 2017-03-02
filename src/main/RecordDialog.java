@@ -43,8 +43,6 @@ public abstract class RecordDialog extends JDialog implements ActionListener {
                 departmentCombo2.getSelectedItem().toString(), Double.parseDouble(salaryField2.getText()), false);
     }
 
-    public  abstract  void setUpFields();
-
     // initialize dialog container
     public Container dialogPane() {
         JPanel empDetails, buttonPanel;
@@ -208,6 +206,7 @@ public abstract class RecordDialog extends JDialog implements ActionListener {
      }// end actionPerformed
 
     public abstract void addOrUpdate();
+    public abstract void setUpFields();
 
 
 }// end class AddRecordDialog

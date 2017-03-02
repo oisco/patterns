@@ -68,8 +68,6 @@ public abstract class SearchDialog extends JDialog implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         // if option search, search for Employee
         if (e.getSource() == search) {
-            // try get correct valus from text field
-            // search Employee by ID
             search();
             dispose();// dispose dialog
         }// end if

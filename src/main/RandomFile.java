@@ -131,7 +131,6 @@ public class RandomFile {
 
 		// object to be written to file
 		RandomAccessEmployeeRecord record;
-		;
 
 		try // output values to file
 		{

@@ -3,9 +3,6 @@ package main;/*
  * This is a Random Access Employee record definition
  *
  * */
-
-import main.Employee;
-
 import java.io.RandomAccessFile;
 import java.io.IOException;
 
@@ -61,7 +58,7 @@ public class RandomAccessEmployeeRecord extends Employee
       writeName( file, getSurname().toUpperCase() );
       writeName( file, getFirstName().toUpperCase() );
       file.writeChar(getGender());
-      writeName(file,getDepartment());
+      writeName( file, getDepartment());
       file.writeDouble( getSalary() );
       file.writeBoolean(getFullTime());
    } // end write

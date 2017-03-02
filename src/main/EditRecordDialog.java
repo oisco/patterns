@@ -21,7 +21,6 @@ public class EditRecordDialog extends RecordDialog{
         setSize(500, 370);
         setLocation(350, 250);
         setVisible(true);
-
     }
 
     @Override
@@ -39,7 +38,6 @@ public class EditRecordDialog extends RecordDialog{
                 application.closeWriteFile();// close file for writing
                 this.parent.displayRecords(currentEmployee);
                 dispose();// dispose dialog
-//                changesMade = false;// state that all changes has bee saved
             } // end if
             setEnabled(false);
         }// end saveChanges
@@ -51,9 +49,9 @@ public class EditRecordDialog extends RecordDialog{
         surnameField2.setText(this.currentEmployee.getSurname().trim());
         salaryField2.setText(String.valueOf(this.currentEmployee.getSalary()).trim());
         ppsField2.setText(this.currentEmployee.getPps().trim());
-        departmentCombo2.setSelectedIndex(1);////come back to chenge dept and gender to be numeric
-        genderCombo2.setSelectedIndex(2);
-        fullTimeCombo2.setSelectedIndex(2);
+        departmentCombo2.setSelectedIndex(this.parent.toDepartment(this.currentEmployee.getDepartment()));////come back to chenge dept and gender to be numeric
+        genderCombo2.setSelectedIndex(this.parent.toGender(this.currentEmployee.getGender()));
+        fullTimeCombo2.setSelectedIndex(this.parent.toFulltime(this.currentEmployee.getFullTime()));
     }
 
 }

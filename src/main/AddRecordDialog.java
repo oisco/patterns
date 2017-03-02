@@ -28,11 +28,8 @@ public class AddRecordDialog extends RecordDialog {
 
 	// add record to file
 	public void addRecord() {
-		boolean fullTime = false;
 		Employee theEmployee;
 
-		if (((String) fullTimeCombo2.getSelectedItem()).equalsIgnoreCase("Yes"))
-			fullTime = true;
 		// create new Employee record with details from text fields
 		theEmployee =getFromFields();
 		this.parent.currentEmployee = theEmployee;
@@ -47,9 +44,7 @@ public class AddRecordDialog extends RecordDialog {
 
 	@Override
 	public void addOrUpdate() {
-			addRecord();// add record to file
-		this.parent.changesMade = true;
+		addRecord();// add record to file
 		dispose();// dispose dialog
-
 	}// end if
 }
