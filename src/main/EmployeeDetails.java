@@ -375,44 +375,6 @@ public class EmployeeDetails extends JFrame implements ActionListener, ItemListe
 		}
 	}
 
-	// search Employee by surname
-	public void searchEmployeeBySurname() {
-		boolean found = false;
-		// if any active Employee record search for ID else do nothing
-		if (isSomeoneToDisplay()) {
-			firstRecord();// look for first record
-			String firstSurname = currentEmployee.getSurname().trim();
-			// if ID to search is already displayed do nothing else loop through
-			// records
-			if (searchBySurnameField.getText().trim().equalsIgnoreCase(surnameField.getText().trim()))
-				found = true;
-			else if (searchBySurnameField.getText().trim().equalsIgnoreCase(currentEmployee.getSurname().trim())) {
-				found = true;
-				displayRecords(currentEmployee);
-			} // end else if
-			else {
-				nextRecord();// look for next record
-				// loop until Employee found or until all Employees have been
-				// checked
-				while (!firstSurname.trim().equalsIgnoreCase(currentEmployee.getSurname().trim())) {
-					// if found break from loop and display Employee details
-					// else look for next record
-					if (searchBySurnameField.getText().trim().equalsIgnoreCase(currentEmployee.getSurname().trim())) {
-						found = true;
-						displayRecords(currentEmployee);
-						break;
-					} // end if
-					else
-						nextRecord();// look for next record
-				} // end while
-			} // end else
-			// if Employee not found display message
-			if (!found)
-				JOptionPane.showMessageDialog(null, "Employee not found!");
-		} // end if
-		searchBySurnameField.setText("");
-	}// end searchEmployeeBySurname
-
 	// find byte start in file for next active record
 	private void nextRecord() {
 		// if any active record in file look for first record
