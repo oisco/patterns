@@ -12,7 +12,7 @@ public class SearchBySurnameDialog extends SearchDialog{
     @Override
     public void search() {
         this.parent.searchBySurnameField.setText(searchField.getText());
-        this.parent.searchEmployeeBySurname();
+        this.parent.search("Surname");
     }
 
 

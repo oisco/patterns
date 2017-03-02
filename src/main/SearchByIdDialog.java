@@ -16,7 +16,7 @@ public class SearchByIdDialog extends SearchDialog {
             Double.parseDouble(searchField.getText());
             this.parent.searchByIdField.setText(searchField.getText());
             // search Employee by ID
-                this.parent.searchEmployeeById();
+                this.parent.search("ID");
         }// end try
         catch (NumberFormatException num) {
             // display message and set colour to text field if entry is wrong
