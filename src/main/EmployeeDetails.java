@@ -331,7 +331,7 @@ public class EmployeeDetails extends JFrame implements ItemListener, WindowListe
 		surnameField.setText(thisEmployee.getSurname().trim());
 		firstNameField.setText(thisEmployee.getFirstName());
 		genderCombo.setSelectedIndex(toGender(thisEmployee.getGender()));
-		departmentCombo.setSelectedIndex(toDepartment(thisEmployee.getDepartment()));
+		departmentCombo.setSelectedIndex(toDepartment(thisEmployee.getDepartment().trim()));
 		salaryField.setText(format.format(thisEmployee.getSalary()));
 		fullTimeCombo.setSelectedIndex(toFulltime(thisEmployee.getFullTime()));
 	}// end display records

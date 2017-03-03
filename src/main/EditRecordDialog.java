@@ -49,7 +49,7 @@ public class EditRecordDialog extends RecordDialog{
         surnameField2.setText(this.currentEmployee.getSurname().trim());
         salaryField2.setText(String.valueOf(this.currentEmployee.getSalary()).trim());
         ppsField2.setText(this.currentEmployee.getPps().trim());
-        departmentCombo2.setSelectedIndex(this.parent.toDepartment(this.currentEmployee.getDepartment()));////come back to chenge dept and gender to be numeric
+        departmentCombo2.setSelectedIndex(this.parent.toDepartment(this.currentEmployee.getDepartment().trim()));////come back to chenge dept and gender to be numeric
         genderCombo2.setSelectedIndex(this.parent.toGender(this.currentEmployee.getGender()));
         fullTimeCombo2.setSelectedIndex(this.parent.toFulltime(this.currentEmployee.getFullTime()));
     }
