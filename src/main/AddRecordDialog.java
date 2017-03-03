@@ -35,6 +35,7 @@ public class AddRecordDialog extends RecordDialog {
 		this.parent.currentEmployee = theEmployee;
 		// open file for writing
 		application.openWriteFile(file.getAbsolutePath());
+		System.out.println(file.toString());
 		// write into a file
 		currentByteStart = application.addRecords(theEmployee);
 		application.closeWriteFile();// close file for writing

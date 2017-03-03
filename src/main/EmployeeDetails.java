@@ -18,7 +18,7 @@ import java.text.DecimalFormat;
 import java.util.Random;
 import java.util.Vector;
 
-public class EmployeeDetails extends JFrame implements ActionListener,ItemListener, WindowListener {
+public class EmployeeDetails extends JFrame implements ItemListener, WindowListener {
 	// decimal format for inactive currency text field
 	private static final DecimalFormat format = new DecimalFormat("\u20ac ###,###,##0.00");
 	// hold object start position in file
@@ -30,6 +30,9 @@ public class EmployeeDetails extends JFrame implements ActionListener,ItemListen
 	public File file;
 	private JMenuItem open, saveAs, create, modify, delete, firstItem, lastItem, nextItem, prevItem, searchById,
 			searchBySurname, listAll, closeApp;
+	private ActionListener openAction, saveAsAction, createAction, modifyAction, deleteAction, firstItemAction, lastItemAction, nextItemAction, prevItemAction,
+			searchByIdAction,searchBySurnameAction,searchByIdDialogAction,searchBySurnameDialogAction, listAllAction, closeAppAction;
+
 	private JButton first, previous, next, last, add, edit, deleteButton, displayAll, searchId, searchSurname;
 	private JComboBox<String> genderCombo, departmentCombo, fullTimeCombo;
 	private JTextField idField, ppsField, surnameField, firstNameField, salaryField;
@@ -67,47 +70,31 @@ public class EmployeeDetails extends JFrame implements ActionListener,ItemListen
 		menuBar.add(navigateMenu);
 		menuBar.add(closeMenu);
 
-		fileMenu.add(open = new JMenuItem("Open")).addActionListener(this);
+		fileMenu.add(open = new JMenuItem("Open"));
 		open.setAccelerator(KeyStroke.getKeyStroke("control O"));
 
-		fileMenu.add(saveAs = new JMenuItem("Save As")).addActionListener(e -> {
-			if(isSomeoneToDisplay())
-				saveFileAs();
-		});
+		fileMenu.add(saveAs = new JMenuItem("Save As"));
 		saveAs.setAccelerator(KeyStroke.getKeyStroke("control F2"));
 
-		recordMenu.add(create = new JMenuItem("Create new Record")).addActionListener(e -> {
-			if(isSomeoneToDisplay())
-				new AddRecordDialog(EmployeeDetails.this,"Add Record",file,currentByteStart);
-		});
+		recordMenu.add(create = new JMenuItem("Create new Record"));
 		create.setAccelerator(KeyStroke.getKeyStroke("control N"));
 
-		recordMenu.add(modify = new JMenuItem("Modify Record")).addActionListener(e -> {
-            if(isSomeoneToDisplay())
-            new EditRecordDialog(EmployeeDetails.this,"Edit Record",file,currentByteStart,currentEmployee);
-        });
-
+		recordMenu.add(modify = new JMenuItem("Modify Record"));
 		modify.setAccelerator(KeyStroke.getKeyStroke("control E"));
-		initActionListeners();
-		recordMenu.add(delete = new JMenuItem("Delete Record")).addActionListener(this);
+		recordMenu.add(delete = new JMenuItem("Delete Record"));
 
 		navigateMenu.add(firstItem = new JMenuItem("First"));
-		firstItem.addActionListener(this);
 		navigateMenu.add(prevItem = new JMenuItem("Previous"));
-		prevItem.addActionListener(this);
 		navigateMenu.add(nextItem = new JMenuItem("Next"));
-		nextItem.addActionListener(this);
 		navigateMenu.add(lastItem = new JMenuItem("Last"));
-		lastItem.addActionListener(this);
 		navigateMenu.addSeparator();
-		navigateMenu.add(searchById = new JMenuItem("Search by ID")).addActionListener(this);
-		navigateMenu.add(searchBySurname = new JMenuItem("Search by Surname")).addActionListener(this);
-		navigateMenu.add(listAll = new JMenuItem("List all Records")).addActionListener(this);
+		navigateMenu.add(searchById = new JMenuItem("Search by ID"));
+		navigateMenu.add(searchBySurname = new JMenuItem("Search by Surname"));
+		navigateMenu.add(listAll = new JMenuItem("List all Records"));
 
-		closeMenu.add(closeApp = new JMenuItem("Close")).addActionListener(this);
+		closeMenu.add(closeApp = new JMenuItem("Close"));
 		closeApp.setMnemonic(KeyEvent.VK_F4);
 		closeApp.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F4, ActionEvent.CTRL_MASK));
-
 		return menuBar;
 	}// end menuBar
 
@@ -118,23 +105,19 @@ public class EmployeeDetails extends JFrame implements ActionListener,ItemListen
 		searchPanel.setBorder(BorderFactory.createTitledBorder("Search"));
 		searchPanel.add(new JLabel("Search by ID:"), "growx, pushx");
 		searchPanel.add(searchByIdField = new JTextField(20), "width 200:200:200, growx, pushx");
-		searchByIdField.addActionListener(this);
 		searchByIdField.setDocument(new JTextFieldLimit(20));
 		searchPanel.add(searchId = new JButton(new ImageIcon(
 				new ImageIcon("imgres.png").getImage().getScaledInstance(35, 20, java.awt.Image.SCALE_SMOOTH))),
 				"width 35:35:35, height 20:20:20, growx, pushx, wrap");
-		searchId.addActionListener(this);
 		searchId.setToolTipText("Search Employee By ID");
 
 		searchPanel.add(new JLabel("Search by Surname:"), "growx, pushx");
 		searchPanel.add(searchBySurnameField = new JTextField(20), "width 200:200:200, growx, pushx");
-		searchBySurnameField.addActionListener(this);
 		searchBySurnameField.setDocument(new JTextFieldLimit(20));
 		searchPanel.add(
 				searchSurname = new JButton(new ImageIcon(new ImageIcon("imgres.png").getImage()
 						.getScaledInstance(35, 20, java.awt.Image.SCALE_SMOOTH))),
 				"width 35:35:35, height 20:20:20, growx, pushx, wrap");
-		searchSurname.addActionListener(this);
 		searchSurname.setToolTipText("Search Employee By Surname");
 
 		return searchPanel;
@@ -148,25 +131,21 @@ public class EmployeeDetails extends JFrame implements ActionListener,ItemListen
 		navigPanel.add(first = new JButton(new ImageIcon(
 				new ImageIcon("first.png").getImage().getScaledInstance(17, 17, java.awt.Image.SCALE_SMOOTH))));
 		first.setPreferredSize(new Dimension(17, 17));
-		first.addActionListener(this);
 		first.setToolTipText("Display first Record");
 
 		navigPanel.add(previous = new JButton(new ImageIcon(new ImageIcon("previous.png").getImage()
 				.getScaledInstance(17, 17, java.awt.Image.SCALE_SMOOTH))));
 		previous.setPreferredSize(new Dimension(17, 17));
-		previous.addActionListener(this);
 		previous.setToolTipText("Display next Record");
 
 		navigPanel.add(next = new JButton(new ImageIcon(
 				new ImageIcon("next.png").getImage().getScaledInstance(17, 17, java.awt.Image.SCALE_SMOOTH))));
 		next.setPreferredSize(new Dimension(17, 17));
-		next.addActionListener(this);
 		next.setToolTipText("Display previous Record");
 
 		navigPanel.add(last = new JButton(new ImageIcon(
 				new ImageIcon("last.png").getImage().getScaledInstance(17, 17, java.awt.Image.SCALE_SMOOTH))));
 		last.setPreferredSize(new Dimension(17, 17));
-		last.addActionListener(this);
 		last.setToolTipText("Display last Record");
 
 		return navigPanel;
@@ -174,25 +153,13 @@ public class EmployeeDetails extends JFrame implements ActionListener,ItemListen
 
 	private JPanel buttonPanel() {
 		JPanel buttonPanel = new JPanel();
-
 		buttonPanel.add(add = new JButton("Add Record"), "growx, pushx");
-		add.addActionListener(e -> {
-				new AddRecordDialog(EmployeeDetails.this,"Add Record",file,currentByteStart);
-		});
-
 		add.setToolTipText("Add new Employee Record");
 		buttonPanel.add(edit = new JButton("Edit Record"), "growx, pushx");
-		edit.addActionListener(e -> {
-			if(isSomeoneToDisplay())
-				new EditRecordDialog(EmployeeDetails.this,"Edit Record",file,currentByteStart,currentEmployee);
-		});
-
 		edit.setToolTipText("Edit current Employee");
 		buttonPanel.add(deleteButton = new JButton("Delete Record"), "growx, pushx, wrap");
-		deleteButton.addActionListener(this);
 		deleteButton.setToolTipText("Delete current Employee");
 		buttonPanel.add(displayAll = new JButton("List all Records"), "growx, pushx");
-		displayAll.addActionListener(this);
 		displayAll.setToolTipText("List all Registered Employees");
 
 		return buttonPanel;
@@ -220,10 +187,10 @@ public class EmployeeDetails extends JFrame implements ActionListener,ItemListen
 		empDetails.add(firstNameField = new JTextField(20), "growx, pushx, wrap");
 
 		empDetails.add(new JLabel("Gender:"), "growx, pushx");
-		empDetails.add(genderCombo = new JComboBox<String>(gender), "growx, pushx, wrap");
+		empDetails.add(genderCombo = new JComboBox<>(gender), "growx, pushx, wrap");
 
 		empDetails.add(new JLabel("Department:"), "growx, pushx");
-		empDetails.add(departmentCombo = new JComboBox<String>(department), "growx, pushx, wrap");
+		empDetails.add(departmentCombo = new JComboBox<>(department), "growx, pushx, wrap");
 
 		empDetails.add(new JLabel("Salary:"), "growx, pushx");
 		empDetails.add(salaryField = new JTextField(20), "growx, pushx, wrap");
@@ -255,8 +222,79 @@ public class EmployeeDetails extends JFrame implements ActionListener,ItemListen
 	}// end detailsPanel
 
 	public void initActionListeners(){
-	}
+		closeAppAction= e -> {
+			exitApp();
+        };
+        closeApp.addActionListener(closeAppAction);
+		openAction= e -> {
+			openFile();
+		};
+		open.addActionListener(openAction);
+		saveAsAction= e -> {
+			if(isSomeoneToDisplay())
+				saveFileAs();
+		};
+		saveAs.addActionListener(saveAsAction);
+		searchBySurnameDialogAction = e -> {
+			exitApp();
+		};
+		deleteAction= e -> {
+			deleteRecord();
+		};
+		delete.addActionListener(deleteAction); deleteButton.addActionListener(deleteAction);
+		searchBySurnameDialogAction = e -> {
+			new SearchBySurnameDialog(EmployeeDetails.this,"Surname");
+		};
+		searchBySurname.addActionListener(searchBySurnameDialogAction);
+		searchByIdDialogAction = e -> {
+			new SearchByIdDialog(EmployeeDetails.this,"ID");
+		};
+		searchById.addActionListener(searchByIdDialogAction);
+		createAction= e -> {
+				new AddRecordDialog(EmployeeDetails.this,"Add Record",file,currentByteStart);
+		};
+		add.addActionListener(createAction);
+		modifyAction=e -> {
+			if(isSomeoneToDisplay())
+				new EditRecordDialog(EmployeeDetails.this,"Edit Record",file,currentByteStart,currentEmployee);
+		};
+		modify.addActionListener(modifyAction); edit.addActionListener(modifyAction);
+		firstItemAction= e -> {
+			firstRecord();
+			displayRecords(currentEmployee);
+		};
+		firstItem.addActionListener(firstItemAction); first.addActionListener(firstItemAction);
+		nextItemAction= e -> {
+			nextRecord();
+			displayRecords(currentEmployee);
+		};
+		nextItem.addActionListener(nextItemAction); next.addActionListener(nextItemAction);
+		prevItemAction= e -> {
+			previousRecord();
+			displayRecords(currentEmployee);
+		};
+		prevItem.addActionListener(prevItemAction); previous.addActionListener(prevItemAction);
+		lastItemAction= e -> {
+			lastRecord();
+			displayRecords(currentEmployee);
+		};
+		last.addActionListener(lastItemAction); lastItem.addActionListener(lastItemAction);
+		listAllAction= e -> {
+			if (isSomeoneToDisplay())
+				displayEmployeeSummaryDialog();
+		};
+		listAll.addActionListener(listAllAction); displayAll.addActionListener(listAllAction);
+		searchBySurnameAction= e -> {
+			search("Surname");
+		};
+		searchSurname.addActionListener(searchBySurnameAction);
+		searchByIdAction= e -> {
+			search("ID");
+		};
+		searchId.addActionListener(searchByIdAction);
 
+
+	}
 
 	public int toFulltime(boolean fullTime){
 		if (fullTime== true)
@@ -455,7 +493,7 @@ public class EmployeeDetails extends JFrame implements ActionListener,ItemListen
 		firstId = currentEmployee.getEmployeeId();
 		// loop until all Employees are added to vector
 		do {
-			empDetails = new Vector<Object>();
+			empDetails = new Vector<>();
 			empDetails.addElement(new Integer(currentEmployee.getEmployeeId()));
 			empDetails.addElement(currentEmployee.getPps());
 			empDetails.addElement(currentEmployee.getSurname());
@@ -609,47 +647,9 @@ public class EmployeeDetails extends JFrame implements ActionListener,ItemListen
 		application.createFile(file.getName());
 	}// end createRandomFile
 
-
-	// action listener for buttons, text field and menu items
-	public void actionPerformed(ActionEvent e) {
-		if (e.getSource() == closeApp) {
-				exitApp();
-		} else if (e.getSource() == open) {
-				openFile();
-		}
-		 else if (e.getSource() == searchById)
-				new SearchByIdDialog(EmployeeDetails.this,"ID");
-		else if (e.getSource() == searchId || e.getSource() == searchByIdField)
-			search("ID");
-		else if (e.getSource() == searchSurname || e.getSource() == searchBySurnameField)
-			search("Surname");
-		else if (e.getSource() == firstItem || e.getSource() == first) {
-				firstRecord();
-				displayRecords(currentEmployee);
-		} else if (e.getSource() == prevItem || e.getSource() == previous) {
-				previousRecord();
-				displayRecords(currentEmployee);
-		} else if (e.getSource() == nextItem || e.getSource() == next) {
-				nextRecord();
-				displayRecords(currentEmployee);
-		} else if (e.getSource() == lastItem || e.getSource() == last) {
-				lastRecord();
-				displayRecords(currentEmployee);
-		} else if (e.getSource() == listAll || e.getSource() == displayAll) {
-			if (isSomeoneToDisplay())
-				displayEmployeeSummaryDialog();
-		}
-		else if (e.getSource() == delete || e.getSource() == deleteButton) {
-				deleteRecord();
-		} else if (e.getSource() == searchBySurname) {
-				new SearchBySurnameDialog(EmployeeDetails.this,"Surname");
-		}
-	}// end actionPerformed
-
 	// content pane for main dialog
 	private void createContentPane() {
 		setTitle("Employee Details");
-		createRandomFile();// create random file name
 		JPanel dialog = new JPanel(new MigLayout());
 
 		setJMenuBar(menuBar());// add menu bar to frame
@@ -661,10 +661,12 @@ public class EmployeeDetails extends JFrame implements ActionListener,ItemListen
 		dialog.add(buttonPanel(), "growx, pushx, span 2,wrap");
 		// add details panel to frame
 		dialog.add(detailsPanel(), "gap top 30, gap left 150, center");
-
 		JScrollPane scrollPane = new JScrollPane(dialog);
 		getContentPane().add(scrollPane, BorderLayout.CENTER);
 		addWindowListener(this);
+		createRandomFile();// create random file name
+		initActionListeners();
+
 	}// end createContentPane
 
 	// create and show main dialog
