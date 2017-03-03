@@ -106,22 +106,17 @@ public abstract class RecordDialog extends JDialog implements ActionListener {
     public boolean correctPps(String pps, long currentByte) {
         boolean ppsExist = false;
         // check for correct PPS format based on assignment description
-        if (pps.length() == 7) {
-            if (pps.matches("[0-9][0-9][0-9][0-9][0-9][0-9][A-Z^a-z]")) {
-                // open file for reading
-                application.openReadFile(file.getAbsolutePath());
-                // look in file is PPS already in use
-                if(!application.isPpsExist(pps, currentByte)){
-                    ppsExist =true;
-                }
-                application.closeReadFile();// close file for reading
-            } // end if
-            else
-                ppsExist = false;
+        if (pps.matches("[0-9][0-9][0-9][0-9][0-9][0-9][A-Z^a-z]")) {
+            // open file for reading
+            // application.openReadFile(file.getAbsolutePath());
+            // look in file is PPS already in use
+            if(!application.isPpsExist(pps, currentByte)){
+                ppsExist =true;
+            }
+            application.closeReadFile();// close file for reading
         } // end if
         else
             ppsExist = false;
-
         return ppsExist;
     }// end correctPPS
 
